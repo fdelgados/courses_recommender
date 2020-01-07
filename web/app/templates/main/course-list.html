@@ -1,0 +1,21 @@
+{% if courses|length %}
+<div class="card-body px-0 py-0">
+    <ul class="list-group list-group-flush">
+        {% for course_id, course in courses.items() %}
+        <li class="list-group-item">
+            <a href="{{ url_for('main.course', course_id=course_id) }}">{{course.title}}</a><br>
+            <span class="lead small">{{ course.center }} | {{ course.category_name }}</span><br>
+            <i class="fa fa-star fa-1 {{ 'star-rating' if course.weighted_rating else 'star-rating-none' }}" aria-hidden="true"></i> <span class="small">{{'%0.2f' % course.weighted_rating|float}} ({{course.number_of_reviews}})</span>
+            <span class="badge badge-pill badge-light">{{course.number_of_leads}} {% if course.number_of_leads != 1 %}requests{% else %}request{% endif %}</span>
+            <i class="fa fa-info-circle fa-1 text-primary request-info-btn request-info-mini" data-course-id="{{ course_id }}" data-toggle="modal" data-target="#requestInfoModal" title="Request Information"></i>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% else %}
+<div class="card-body">
+    <div class="alert alert-warning">
+        <i class="far fa-surprise fa-2x"></i> Ups! No recommendations available
+    </div>
+</div>
+{% endif %}

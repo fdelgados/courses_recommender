@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="col-md-12">
+    {% if recommendations.by_user|length %}
+        <h3 class="py-3">Recommendations for You</h3>
+        {% with courses=recommendations.by_user %}
+            {% include 'main/course-list.html' %}
+        {% endwith %}
+    {% endif %}
+    <h3 class="py-3">Our Top Courses</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    The Most Often Requested
+                </div>
+                {% with courses=recommendations.by_number_of_leads %}
+                    {% include 'main/course-list.html' %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Top Rated
+                </div>
+                {% with courses=recommendations.by_rating %}
+                    {% include 'main/course-list.html' %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    <h3 class="py-3">Popular Categories</h3>
+    <div class="row px-3 popular-categories">
+        {% for category_id, category in categories.items() %}
+        <a class="w-25 mr-2 mb-2 p-3 border text-center" href="{{ url_for('main.catalog', category=category_id) }}">
+            {{ category.name }}
+            {% include 'main/category-meta.html' %}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
