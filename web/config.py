@@ -16,6 +16,7 @@ class Config:
                                                            DB_PASSWORD,
                                                            DB_HOST,
                                                            DB_NAME)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     DATA_DIR = os.path.join(Path(basedir).parent, 'data')
     APPLICATION_ROOT = basedir
 
