@@ -81,16 +81,15 @@ def course(course_id):
                            recommendations=response['recommendations'])
 
 
-@main.route('/request-information', methods=['GET', 'POST'])
+@main.route('/request-information', methods=['POST'])
 def request_information():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        course_id = request.form.get('courseId')
+    email = request.form.get('email')
+    course_id = request.form.get('courseId')
 
-        command = PlaceAnInfoRequestCommand(course_id, email)
-        response = PlaceAnInfoRequest.execute(command)
+    command = PlaceAnInfoRequestCommand(course_id, email)
+    response = PlaceAnInfoRequest.execute(command)
 
-        if not response['success']:
-            return abort(500)
+    if not response['success']:
+        return abort(500)
 
     return render_template('request-information.html', response=response)
