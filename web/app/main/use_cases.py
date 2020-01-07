@@ -90,14 +90,16 @@ class RetrieveCourseCatalog:
 
 
 class RetrieveCourseDataCommand:
-    """Request command containing the course identifier"""
+    """Request command containing the course identifier and user email"""
 
-    def __init__(self, course_id: int):
+    def __init__(self, course_id: int, user_email: str = None):
         """Initializes the command
 
         :param course_id: Course identifier
+        :param user_email: User email
         """
         self.course_id = course_id
+        self.user_email = user_email
 
 
 class RetrieveCourseData:
@@ -116,6 +118,8 @@ class RetrieveCourseData:
         recommender = Recommender()
         recommender.make_recommendations_by_course(course.id).make_rank_recommendations(course.category_id,
                                                                                         str(course.id))
+        if command.user_email:
+            recommender.make_recommendations_by_user(hash_user_email(command.user_email))
 
         return {'course': course,
                 'recommendations': recommender}

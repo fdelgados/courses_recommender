@@ -6,25 +6,40 @@ from .use_cases import PlaceAnInfoRequest, PlaceAnInfoRequestCommand
 from .use_cases import RetrieveHomeRecommendations, RetrieveHomeRecommendationsCommand
 from .use_cases import RetrieveCategories
 
-user_id = '1460318498c1f53bb880ce2e6d9ef64b' # user@test.com
-
-
-@main.before_request
-def session_management():
-    session.permanent = True
+users = {
+    'user@test.com': {
+        'password': '1234'
+    }
+}
 
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['email'] != 'user@test.com' or request.form['password'] != '1234':
+        req = request.form
+
+        user_email = req.get('email')
+        password = req.get('password')
+
+        user = users.get(user_email)
+
+        if not user or password != user.get('password'):
             error = 'Invalid Credentials. Please try again.'
         else:
-            session['user_email'] = request.form['email']
+            session.clear()
+            session['user_email'] = user_email
+
             return redirect(url_for('main.home'))
 
     return render_template('login.html', error=error)
+
+
+@main.route('/logout')
+def logout():
+    session.pop('user_email', None)
+
+    return redirect(url_for('main.home'))
 
 
 @main.route('/', methods=['GET'])
@@ -57,7 +72,7 @@ def catalog():
 
 @main.route('/course/<int:course_id>', methods=['GET'])
 def course(course_id):
-    command = RetrieveCourseDataCommand(course_id)
+    command = RetrieveCourseDataCommand(course_id, session.get('user_email'))
 
     response = RetrieveCourseData.execute(command)
 
@@ -66,15 +81,16 @@ def course(course_id):
                            recommendations=response['recommendations'])
 
 
-@main.route('/request-information', methods=['POST'])
+@main.route('/request-information', methods=['GET', 'POST'])
 def request_information():
-    email = request.form.get('email')
-    course_id = request.form.get('courseId')
+    if request.method == 'POST':
+        email = request.form.get('email')
+        course_id = request.form.get('courseId')
 
-    command = PlaceAnInfoRequestCommand(course_id, email)
-    response = PlaceAnInfoRequest.execute(command)
+        command = PlaceAnInfoRequestCommand(course_id, email)
+        response = PlaceAnInfoRequest.execute(command)
 
-    if not response['success']:
-        return abort(500)
+        if not response['success']:
+            return abort(500)
 
     return render_template('request-information.html', response=response)

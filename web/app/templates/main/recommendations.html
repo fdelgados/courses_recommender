@@ -1,20 +1,20 @@
 <div class="col-md-12">
-    {% if recommendations.by_user %}
-        <h3 class="py-3">Recommendations for you</h3>
-        <div class="card">
-            {% with courses=recommendations.by_user %}
-            {% include 'main/course-list.html' %}
-            {% endwith %}
-        </div>
-    {% endif %}
-
-    {% if recommendations.by_leads %}
+    {% if recommendations.by_leads|length %}
         <h3 class="py-3">Users who requested information about this course were also interested in</h3>
         <div class="card">
             {% with courses=recommendations.by_leads %}
             {% include 'main/course-list.html' %}
             {% endwith %}
         </div>
+    {% endif %}
+
+    {% if recommendations.by_user|length %}
+    <h3 class="py-3">Recommendations for you</h3>
+    <div class="card">
+        {% with courses=recommendations.by_user %}
+        {% include 'main/course-list.html' %}
+        {% endwith %}
+    </div>
     {% endif %}
 
     <h3 class="py-3">You may also be interested in</h3>
