@@ -1,1 +1,1 @@
-web: gunicorn run:courses-recommender
+web: gunicorn run:app
