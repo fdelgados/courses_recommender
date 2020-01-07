@@ -1,0 +1,53 @@
+<div class="col-md-12">
+    {% if recommendations.by_user %}
+        <h3 class="py-3">Recommendations for you</h3>
+        <div class="card">
+            {% with courses=recommendations.by_user %}
+            {% include 'main/course-list.html' %}
+            {% endwith %}
+        </div>
+    {% endif %}
+
+    {% if recommendations.by_leads %}
+        <h3 class="py-3">Users who requested information about this course were also interested in</h3>
+        <div class="card">
+            {% with courses=recommendations.by_leads %}
+            {% include 'main/course-list.html' %}
+            {% endwith %}
+        </div>
+    {% endif %}
+
+    <h3 class="py-3">You may also be interested in</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    The Most Often Requested in {{ course.category_name }}
+                </div>
+                {% with courses=recommendations.by_number_of_leads %}
+                {% include 'main/course-list.html' %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Top Rated in {{ course.category_name }}
+                </div>
+                {% with courses=recommendations.by_rating %}
+                {% include 'main/course-list.html' %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="col-md-4 recommendations-list-col">
+            <div class="card">
+                <div class="card-header">
+                    Similar Courses
+                </div>
+                {% with courses=recommendations.by_content %}
+                {% include 'main/course-list.html' %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>

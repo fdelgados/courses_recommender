@@ -1,0 +1,82 @@
+body {
+    padding-top: 56px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;
+}
+
+.course-list-item {
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.course-grid-item .card {
+    height: 250px;
+}
+
+.course-grid-item .title a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-height: 16px;
+    max-height: 32px;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.course-meta {
+    margin-bottom: 1.25em;
+    color: #495057;
+}
+.request-info-mini {
+    cursor: pointer;
+}
+
+.star-rating {
+    color: orange;
+}
+
+.star-rating-none {
+    color: #CCCCCC;
+}
+
+.main-container {
+    padding-bottom: 50px;
+    padding-top: 30px;
+}
+.container-error {
+    padding-top: 50px;
+}
+
+.left-sidebar .categories-menu a.active span.rating {
+    color: #ffffff;
+}
+
+.popular-categories a:hover {
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.popular-categories a span.rating {
+    color: #495057;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    margin-bottom: 60px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+}
+

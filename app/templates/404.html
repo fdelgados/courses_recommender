@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}404 Not Found{% endblock %}
+{% block metas %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+{% block body %}
+<div class="container main-container container-error">
+    <div class="row">
+        <div class="alert alert-warning col-md-12" role="alert">
+            <h4 class="alert-heading">Page not found!</h4>
+            <p>{{err}}</p>
+            <hr>
+            <p class="mb-0">Return to <a href="/">home</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

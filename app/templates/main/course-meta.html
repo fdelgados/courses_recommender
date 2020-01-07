@@ -1,0 +1,5 @@
+<h4>{{course.center}} | <span class="small lead">{{ course.category_name }}</span></h4>
+<p class="course-meta">
+    <i class="fa fa-star fa-2 {{ 'star-rating' if course.weighted_rating else 'star-rating-none' }}" aria-hidden="true"></i> <span class="small">{{'%0.2f' % course.weighted_rating|float}} Based on {{ course.number_of_reviews }} {% if course.number_of_reviews != 1 %}reviews{% else %}review{% endif %}</span>
+    <span class="badge badge-pill badge-light">{{course.number_of_leads}} {% if course.number_of_leads != 1 %}requests{% else %}request{% endif %}</span>
+</p>

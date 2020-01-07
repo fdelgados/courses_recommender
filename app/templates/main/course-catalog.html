@@ -1,0 +1,76 @@
+{% if response.category_id %}
+{% set cat_qstring = '&category=' + response.category_id|string %}
+{% else %}
+{% set cat_qstring = '' %}
+{% endif %}
+
+{% if response.category_name %}
+{% set selected_category = response.category_name %}
+{% else %}
+{% set selected_category = 'All categories' %}
+{% endif %}
+
+{% extends "base.html" %}
+{% block title %}Catalog | {{ selected_category }}{% endblock %}
+{% block content %}
+<div class="col-md-12">
+    <h1>{{ selected_category }}</h1>
+</div>
+<div class="col-md-3 left-sidebar">
+    <div class="card">
+        <div class="card-body p-0">
+            <h5 class="card-title p-2">Sort by</h5>
+            <div class="px-3 py-2">
+                <a href="{{ url_for('main.catalog', sort_by='leads')}}{{cat_qstring}}" class="btn btn-block btn-sm {{ 'btn-dark disabled' if response.sort_by == 'leads' else 'btn-outline-dark' }}">Number of leads</a>
+                <a href="{{ url_for('main.catalog', sort_by='rating')}}{{cat_qstring}}" class="btn btn-block btn-sm {{ 'btn-dark disabled' if response.sort_by == 'rating' else 'btn-outline-dark' }}">Rating</a>
+            </div>
+            <h5 class="card-title p-2">Categories</h5>
+            <div class="list-group list-group-flush categories-menu">
+                <a href="{{ url_for('main.catalog', sort_by=response.sort_by)}}" class="list-group-item list-group-item-action{{ '' if response.category_id else ' active' }}">All categories</a>
+                {% for category_id, category in response.categories.items() %}
+                    <a href="{{ url_for('main.catalog', sort_by=response.sort_by, category=category_id)}}" class="list-group-item list-group-item-action{{ ' active' if category_id ==  response.category_id else '' }}">
+                        {{category.name}}
+                        {% include 'main/category-meta.html' %}
+                    </a>
+                {% endfor %}
+                <a href="{{ url_for('main.categories')}}" class="list-group-item list-group-item-action text-center">
+                    More categories&hellip;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-9">
+    {% for course_id, course in response.courses.items() %}
+    <div class="col-xs-12 clearfix course-list-item border rounded">
+        <h3><a href="{{ url_for('main.course', course_id=course_id) }}">{{ course.title }}</a></h3>
+        {% include 'main/course-meta.html' %}
+        <p class="course-description">
+            {% if course.description %}
+            {{ course.description|truncate(250) }}
+            {% endif %}
+        </p>
+        <p><button type="button" class="btn btn-primary float-right request-info-btn" data-course-id="{{ course_id }}" data-toggle="modal" data-target="#requestInfoModal">Request information</button></p>
+    </div>
+    {% endfor %}
+
+    <nav aria-label="paginator">
+        <ul class="pagination justify-content-center">
+            <li class="page-item{{ '' if response.prev_page else ' disabled' }}">
+                <a class="page-link" href="{{ url_for('main.catalog', sort_by=response.sort_by, page=response.prev_page) }}{{cat_qstring}}" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">{{response.current_page}} of {{response.total_pages}} pages</a>
+            </li>
+            <li class="page-item{{ '' if response.next_page else ' disabled' }}">
+                <a class="page-link" href="{{ url_for('main.catalog', sort_by=response.sort_by, page=response.next_page) }}{{cat_qstring}}">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+{% block script %}
+<script src="{{ url_for('static', filename='js/request-info.js') }}"></script>
+{% endblock %}
+
+{% include 'main/request-form.html' %}

@@ -1,0 +1,5 @@
+<br>
+<span class="category-meta">
+    <i class="fa fa-star fa-2 {{ 'star-rating' if category.weighted_rating else 'star-rating-none' }}" aria-hidden="true"></i> <span class="small rating">{{'%0.2f' % category.weighted_rating|float}}</span>
+    <span class="badge badge-pill badge-light">{{ category.number_of_leads }} {% if category.number_of_leads != 1 %}requests{% else %}request{% endif %}</span>
+</span>
