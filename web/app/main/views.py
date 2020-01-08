@@ -9,6 +9,9 @@ from .use_cases import RetrieveCategories
 users = {
     'user@test.com': {
         'password': '1234'
+    },
+    'testuser@test.com': {
+        'password': '4567'
     }
 }
 
