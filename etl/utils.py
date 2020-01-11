@@ -2,7 +2,7 @@ from termcolor import cprint
 from halo import Halo
 
 
-class WriteToScreen:
+class Output:
     DEFAULT_COLOR = 'white'
     INFO_COLOR = 'blue'
     WARNING_COLOR = 'yellow'

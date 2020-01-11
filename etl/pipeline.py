@@ -2,7 +2,7 @@
 
 import argparse
 
-from utils import WriteToScreen
+from utils import Output
 from classes import Extract, Transform
 
 parser = argparse.ArgumentParser(description='Performs an ETL pipeline',
@@ -40,7 +40,7 @@ def is_valid_user(username, password):
 
 
 def main():
-    output = WriteToScreen()
+    output = Output()
 
     output.title('START ETL PIPELINE')
     output.start_spinner('Validating user credentials')
