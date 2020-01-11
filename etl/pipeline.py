@@ -71,7 +71,7 @@ def main():
     output.title('DATA TRANSFORMATION')
 
     # Remove duplicated rows
-    output.default('Removing duplicated data')
+    output.write('Removing duplicated data')
 
     transform = Transform(leads_df, reviews_df)
 

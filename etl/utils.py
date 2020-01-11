@@ -46,9 +46,6 @@ class WriteToScreen:
         message = '\n * {} \n{}'.format(message.upper(), '=' * 60)
         cprint(message, color=color, attrs=['bold'])
 
-    def default(self, message: str):
-        self.write(message)
-
     def success(self, message: str):
         self.write(message, 'success', '✔')
 
