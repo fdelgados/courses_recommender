@@ -191,7 +191,7 @@ class Transform:
 
         # Add category id to courses DataFrame
         def category_id(category_name: str) -> int:
-            """Returns the category id
+            """Searches for a category by name in the category data frame and returns its identifier
 
             :param category_name: Category name
             :return: The category id
