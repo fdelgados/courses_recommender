@@ -30,5 +30,6 @@ To run this project on a local machine, you have to follow these steps:
     * Debugger PIN: 148-090-871
     ```
 6. Now, open your browser and go to http://localhost:5000
+    ![Home page](https://github.com/fdelgados/courses_recommender/blob/master/web/img/home_screenshot.png)
     
     
