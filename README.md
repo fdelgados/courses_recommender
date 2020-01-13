@@ -62,3 +62,14 @@ More information [here](https://pypi.org/project/texcptulz/).
 
 <a id="references"></a>
 ## References
+
+### Books
+* Bengford, Bilbro & Ojeda (2018) [Applied Text Analysis with Python](http://shop.oreilly.com/product/0636920052555.do). O'Reilly Media Inc.
+* Segaran (2007) [Programming Collective Intelligence](http://shop.oreilly.com/product/9780596529321.do). O'Reilly Media Inc.
+* Phillips (2019) [Python 3 Object-Oriented Programming. Third Edition](https://www.packtpub.com/application-development/python-3-object-oriented-programming-third-edition). Packt Publishing Ltd.
+* Grinberg (2014) [Flask Web Development. Developing Web Applications with Python](http://shop.oreilly.com/product/0636920031116.do). O'Reilly Media Inc.
+
+### Online resources
+* [Flask Documentation](https://flask.palletsprojects.com/en/1.1.x/)
+* [Jinja Documentation](https://jinja.palletsprojects.com/en/2.10.x/)
+* [SQLAlchemy Documentation](https://docs.sqlalchemy.org/en/13/)
