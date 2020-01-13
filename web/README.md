@@ -33,6 +33,6 @@ To run this project on a local machine, you have to follow these steps:
 
     ![Home page](https://github.com/fdelgados/courses_recommender/blob/master/web/img/home_screenshot.png)
     
-7. To stop de application, press `CTRL+C`
+7. To stop the application, press `CTRL+C`
     
     
