@@ -1,6 +1,5 @@
 from .db_service import DbService
 import pandas as pd
-from os import path
 
 
 class Extract(DbService):
@@ -20,11 +19,7 @@ class Extract(DbService):
         ORDER BY created_on DESC
         '''
 
-        if path.exists('leads_tmp.csv'):
-            return pd.read_csv('leads_tmp.csv')
-
         df = self.create_df_from_query(query)
-        df.to_csv('leads_tmp.csv', index=False)
 
         return df
 
@@ -45,11 +40,7 @@ class Extract(DbService):
         ORDER BY created_on DESC
         '''
 
-        if path.exists('reviews_tmp.csv'):
-            return pd.read_csv('reviews_tmp.csv')
-
         df = self.create_df_from_query(query)
-        df.to_csv('reviews_tmp.csv', index=False)
 
         return df
 

@@ -5,3 +5,4 @@ __pycache__
 sql
 out
 web/venv
+etl/.tmp/*.csv
