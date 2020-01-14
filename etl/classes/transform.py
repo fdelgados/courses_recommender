@@ -38,6 +38,32 @@ class Transform:
 
         return num_rows_before - self.reviews_df.shape[0]
 
+    def replace_reviews_null_values(self, column: str, replacement: Union[str, int, float]) -> int:
+        """Fills null values in `column` with `replacement` in reviews DataFrame
+
+        :param column: Column name/s to search for null values
+        :param replacement: Value to use to replace nulls
+        :return: The number of values that has been replaced
+        """
+        num_nulls = self.reviews_df[column].isnull().sum()
+
+        self.reviews_df = Transform.__replace_nulls__(self.reviews_df, column, replacement)
+
+        return num_nulls
+
+    def replace_leads_null_values(self, column: str, replacement: Union[str, int, float]) -> int:
+        """Fills null values in `column` with `replacement` in leads DataFrame
+
+        :param column: Column name/s to search for null values
+        :param replacement: Value to use to replace nulls
+        :return: The number of values that has been replaced
+        """
+        num_nulls = self.leads_df[column].isnull().sum()
+
+        self.leads_df = Transform.__replace_nulls__(self.leads_df, column, replacement)
+
+        return num_nulls
+
     def change_column_type(self, subset: Union[List[str], str], new_type: type):
         """Changes column/s data type from the leads and reviews DataFrames
 
@@ -220,6 +246,22 @@ class Transform:
 
         if df.duplicated(subset).sum() > 0:
             df.drop_duplicates(subset, inplace=True, keep='last')
+
+        return df
+
+    @staticmethod
+    def __replace_nulls__(df: pd.DataFrame, column: str, replacement: Union[str, int, float]) -> pd.DataFrame:
+        """Fills null values in `column` with `replacement`
+
+        :param df: A pandas DataFrame
+        :param column: Column name/s to search for null values
+        :param replacement: Value to use to replace nulls
+        :return: The DataFrame with replaced values
+        """
+
+        Transform.__guard_against_non_existent_columns__(df, [column])
+
+        df[column] = df[column].fillna(replacement)
 
         return df
 

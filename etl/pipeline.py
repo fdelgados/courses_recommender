@@ -114,6 +114,23 @@ def transform_data(leads_df: pd.DataFrame, reviews_df: pd.DataFrame) -> Transfor
         output.spinner_fail(str(err))
         exit(1)
 
+    # Replace missing values
+    output.write('Replacing missing values')
+
+    try:
+        output.start_spinner('Replacing missing values in leads DataFrame')
+        leads_values_replaced = transform.replace_leads_null_values('course_description', '')
+
+        output.spinner_success('Replaced {} missing descriptions in leads DataFrame'.format(leads_values_replaced))
+
+        output.start_spinner('Replacing missing values in reviews DataFrame')
+        reviews_values_replaced = transform.replace_reviews_null_values('course_description', '')
+
+        output.spinner_success('Replaced {} missing descriptions in reviews DataFrame'.format(reviews_values_replaced))
+    except ValueError as err:
+        output.spinner_fail(str(err))
+        exit(1)
+
     # Change data types
     output.write('Changing data types')
     output.start_spinner('Changing ids to string type')
