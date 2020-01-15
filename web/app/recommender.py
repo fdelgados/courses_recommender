@@ -1,23 +1,38 @@
 import numpy as np
-from . import db
-from sqlalchemy import text
+import os
+from typing import Dict
 from .models import CourseRepository
+import pickle
 
 
-def find_neighbours(user_id: str) -> np.ndarray:
-    """Find similar users in database
-
-    :param user_id: Identifier of the user for whom we want to search neighbours
-    :return: An array of similar user identifiers
+def find_similar_users(user_id: str, sparse_user_item_dict: Dict, min_similarity: int = 1):
     """
-    query = '''SELECT another_user_id
-                FROM users_similarities 
-                WHERE a_user_id = :user_id
-                ORDER BY similarity DESC'''
+    Creates an array of similar users based on leads generated on the same courses
 
-    result = db.engine.execute(text(query), user_id=user_id)
+    :param user_id: User id for which we want to find similar users
+    :param sparse_user_item_dict: Leads user-item matrix
+    :param min_similarity: Minimum similarity between users to be listed
 
-    return np.array([row['another_user_id'] for row in result])
+    :return numpy.array: Array of similar users sorted by similarity
+    """
+
+    user_courses = np.array(sparse_user_item_dict[user_id].todense())[0]
+
+    similarities = dict()
+
+    for another_user_id, another_user_courses in sparse_user_item_dict.items():
+        if user_id == another_user_id:
+            continue
+
+        similarity = np.dot(user_courses, np.array(another_user_courses.todense())[0])
+        if similarity < min_similarity:
+            continue
+
+        similarities[another_user_id] = similarity
+
+    sorted_similarities = sorted(similarities.items(), key=lambda item: item[1], reverse=True)
+
+    return np.array([user_id for (user_id, similarity) in sorted_similarities])
 
 
 class Recommender:
@@ -82,7 +97,12 @@ class Recommender:
         rec_courses_ids = np.array([])
         neighbours_courses = {}
 
-        similar_users = find_neighbours(user_id)
+        user_map_courses_file = '{}/../data/user_courses_map.pickle'.format(os.path.dirname(os.path.abspath(__file__)))
+
+        with open(user_map_courses_file, 'rb') as filename:
+            user_courses_map = pickle.load(filename)
+
+        similar_users = find_similar_users(user_id, user_courses_map)
         for similar_user_id in similar_users:
             neighbour_courses = self.course_repository.find_by_user_leads(similar_user_id)
             neighbours_courses.update(neighbour_courses)
