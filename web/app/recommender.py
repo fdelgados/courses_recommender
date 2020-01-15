@@ -116,6 +116,7 @@ class Recommender:
         if len(rec_courses_ids) == 0:
             return self
 
+        rec_courses_ids = rec_courses_ids[:max_recommendations]
         self.by_user = {course_id: course for (course_id, course) in neighbours_courses.items()
                         if course_id in rec_courses_ids}
 
