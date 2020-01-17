@@ -97,7 +97,8 @@ class Recommender:
         rec_courses_ids = np.array([])
         neighbours_courses = {}
 
-        user_map_courses_file = '{}/../data/user_courses_map.pickle'.format(os.path.dirname(os.path.abspath(__file__)))
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        user_map_courses_file = '{}/../data/user_requested_courses_map.pickle'.format(dirname)
 
         with open(user_map_courses_file, 'rb') as filename:
             user_courses_map = pickle.load(filename)
