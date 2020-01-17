@@ -43,7 +43,9 @@ def tmp_files() -> bool:
     return path.exists('.tmp/reviews.csv') and \
         path.exists('.tmp/courses.csv') and \
         path.exists('.tmp/leads.csv') and \
-        path.exists('.tmp/categories.csv')
+        path.exists('.tmp/categories.csv') and \
+        path.exists('.tmp/courses_similarities.csv') and \
+        path.exists('.tmp/course_course_recs.csv')
 
 
 def is_valid_user(username: str, password: str) -> bool:
@@ -195,16 +197,72 @@ def transform_data(leads_df: pd.DataFrame, reviews_df: pd.DataFrame) -> Transfor
     output.spinner_success('Categories DataFrame creation complete. There are {} categories'.format(
         categories_df.shape[0]))
 
+    # Create course content similarity DataFrame
+    output.write('Create a course content similarity DataFrame')
+    output.warning('This process can take a long time')
+    output.start_spinner('Creating a course content similarity DataFrame')
+
+    try:
+        transform.create_course_content_similarity_df(sample_len=50)
+        output.spinner_success()
+    except Exception as err:
+        output.spinner_fail(str(err))
+        exit(1)
+
+    # Create leads user-item matrix
+    output.write('Create leads user-item matrix')
+    output.warning('This process can take a long time')
+    output.start_spinner('Creating the leads user-item matrix')
+
+    try:
+        transform.create_leads_user_item_matrix()
+        output.spinner_success()
+
+        # Compress leads user-item matrix
+        output.write('Compress leads user-item matrix')
+        output.start_spinner('Compressing the leads user-item matrix')
+
+        transform.compress_leads_user_item_matrix()
+
+        output.spinner_success()
+
+    except Exception as err:
+        output.spinner_fail(str(err))
+        exit(1)
+
+    # Create ratings user-item matrix
+    output.write('Create ratings user-item matrix')
+    output.warning('This process can take a long time')
+    output.start_spinner('Creating the ratings user-item matrix')
+
+    try:
+        transform.create_ratings_user_item_matrix()
+        output.spinner_success()
+
+    except Exception as err:
+        output.spinner_fail(str(err))
+        exit(1)
+
+    # Create course-course recommendations DataFrame
+    output.write('Create course-course recommendations DataFrame')
+    output.warning('This process can take a long time')
+    output.start_spinner('Creating the course-course recommendations DataFrame')
+
+    try:
+        transform.create_course_course_recommendations_df()
+
+        output.spinner_success()
+    except Exception as err:
+        output.spinner_fail(str(err))
+        exit(1)
+
     return transform
 
 
-def load_data(courses_df: pd.DataFrame, leads_df: pd.DataFrame,
-              reviews_df: pd.DataFrame, categories_df: pd.DataFrame) -> bool:
+def load_data(transform: Transform) -> bool:
     """Load clean data to database
-    :param courses_df: Courses DataFrame
-    :param leads_df: Leads DataFrame
-    :param reviews_df: Reviews DataFrame
-    :param categories_df: Categories DataFrame
+
+    :param transform: Transform class, containing all DataFrames to be loaded
     :return: Returns `True` if loading process has been completed successfully, returns `False` otherwise
     """
     load = Load(input_username, input_password, db_name, db_host)
@@ -215,7 +273,7 @@ def load_data(courses_df: pd.DataFrame, leads_df: pd.DataFrame,
     output.start_spinner('Saving courses to database')
 
     try:
-        load.save_courses(courses_df)
+        load.save_courses(transform.courses_df)
 
         output.spinner_success()
     except Exception as err:
@@ -227,7 +285,7 @@ def load_data(courses_df: pd.DataFrame, leads_df: pd.DataFrame,
     output.start_spinner('Saving leads to database')
 
     try:
-        load.save_leads(leads_df)
+        load.save_leads(transform.leads_df)
 
         output.spinner_success()
     except Exception as err:
@@ -239,7 +297,7 @@ def load_data(courses_df: pd.DataFrame, leads_df: pd.DataFrame,
     output.start_spinner('Saving reviews to database')
 
     try:
-        load.save_reviews(reviews_df)
+        load.save_reviews(transform.reviews_df)
 
         output.spinner_success()
     except Exception as err:
@@ -251,7 +309,44 @@ def load_data(courses_df: pd.DataFrame, leads_df: pd.DataFrame,
     output.start_spinner('Saving categories to database')
 
     try:
-        load.save_categories(categories_df)
+        load.save_categories(transform.categories_df)
+
+        output.spinner_success()
+    except Exception as err:
+        output.spinner_fail(str(err))
+        load_errors += 1
+
+    # Save courses content similarities to database
+    output.write('Save courses content similarities to database')
+    output.start_spinner('Saving courses content similarities to database')
+
+    try:
+        load.save_course_content_similarities(transform.courses_content_sims_df)
+
+        output.spinner_success()
+    except Exception as err:
+        output.spinner_fail(str(err))
+        load_errors += 1
+
+    # Save courses content similarities to database
+    output.write('Save course-course recommendations to database')
+    output.start_spinner('Saving course-course recommendations to database')
+
+    try:
+        load.save_course_course_recommendations(transform.course_course_recs_df)
+
+        output.spinner_success()
+    except Exception as err:
+        output.spinner_fail(str(err))
+        load_errors += 1
+
+    # Save user requested courses map to a file
+    output.write('Save user requested courses map to a file')
+    output.start_spinner('Saving user requested courses map to a file')
+
+    try:
+        load.save_user_courses_map(transform.user_requested_courses_map,
+                                   '../web/data/user_requested_courses_map.pickle')
 
         output.spinner_success()
     except Exception as err:
@@ -278,8 +373,13 @@ def main():
 
         leads_df = pd.read_csv('.tmp/leads.csv')
         reviews_df = pd.read_csv('.tmp/reviews.csv')
-        courses_df = pd.read_csv('.tmp/courses.csv')
-        categories_df = pd.read_csv('.tmp/categories.csv')
+
+        transform = Transform(leads_df, reviews_df)
+        transform.courses_df = pd.read_csv('.tmp/courses.csv')
+        transform.categories_df = pd.read_csv('.tmp/categories.csv')
+        transform.courses_content_sims_df = pd.read_csv('.tmp/courses_similarities.csv')
+        transform.course_course_recs_df = pd.read_csv('.tmp/course_course_recs.csv')
+
     else:
         # Data extraction
         leads_df, reviews_df = extract_data()
@@ -288,23 +388,21 @@ def main():
         output.title('DATA TRANSFORMATION')
 
         transform = transform_data(leads_df, reviews_df)
-        leads_df = transform.leads_df
-        reviews_df = transform.reviews_df
-        courses_df = transform.courses_df
-        categories_df = transform.categories_df
 
     # Data load
     output.title('DATA LOAD')
 
     # If there is an error in data loading, dataframes will be saved into a local csv files
     # in this way, when executing the process again, the extracted data will already be clean
-    if load_data(courses_df, leads_df, reviews_df, categories_df):
+    if load_data(transform):
         output.success('ETL pipeline completed')
     else:
-        reviews_df.to_csv('.tmp/reviews.csv', index=False)
-        leads_df.to_csv('.tmp/leads.csv', index=False)
-        courses_df.to_csv('.tmp/courses.csv', index=False)
-        categories_df.to_csv('.tmp/categories.csv', index=False)
+        transform.reviews_df.to_csv('.tmp/reviews.csv', index=False)
+        transform.leads_df.to_csv('.tmp/leads.csv', index=False)
+        transform.courses_df.to_csv('.tmp/courses.csv', index=False)
+        transform.categories_df.to_csv('.tmp/categories.csv', index=False)
+        transform.courses_content_sims_df.to_csv('.tmp/courses_similarities.csv', index=False)
+        transform.course_course_recs_df.to_csv('.tmp/course_course_recs.csv', index=False)
 
         output.warning('ETL pipeline completed with errors')
 

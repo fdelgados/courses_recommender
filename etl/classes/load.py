@@ -1,3 +1,5 @@
+import pickle
+from typing import Dict
 from .db_service import DbService
 import pandas as pd
 
@@ -96,3 +98,53 @@ class Load(DbService):
         connection.execute(sql_create)
 
         categories_df.to_sql('categories', con=connection, if_exists='append', index=False)
+
+    def save_course_content_similarities(self, course_content_similarities_df: pd.DataFrame):
+        """Saves courses content similarities DataFrame to database
+
+        :param course_content_similarities_df: Courses content similarities DataFrame
+        """
+        return
+
+        connection = self.connection()
+
+        sql_drop = 'DROP TABLE IF EXISTS `courses_similarities`'
+        connection.execute(sql_drop)
+
+        sql_create = """CREATE TABLE `courses_similarities` (
+          `a_course_id` varchar(9) NOT NULL,
+          `another_course_id` varchar(9) NOT NULL,
+          `similarity` double NOT NULL,
+          PRIMARY KEY (`a_course_id`, `another_course_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        """
+        connection.execute(sql_create)
+
+        # Save course similarities to database
+        course_content_similarities_df.to_sql('courses_similarities', con=connection, if_exists='append', index=False)
+
+    def save_course_course_recommendations(self, course_course_recs_df: pd.DataFrame):
+        """Saves courses recommendations DataFrame to database
+
+        :param course_course_recs_df: Courses recommendations DataFrame
+        """
+        conn = self.connection()
+
+        sql_drop = 'DROP TABLE IF EXISTS `recommended_courses_by_leads`'
+        conn.execute(sql_drop)
+
+        sql_create = """CREATE TABLE `recommended_courses_by_leads` (
+          `course` varchar(9) NOT NULL,
+          `recommended` varchar(9) NOT NULL,
+          PRIMARY KEY (`course`, `recommended`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        """
+        conn.execute(sql_create)
+
+        # Save recommendations to database
+        course_course_recs_df.to_sql('recommended_courses_by_leads', con=conn, if_exists='append', index=False)
+
+    def save_user_courses_map(self, user_courses_map: Dict, file_name: str):
+        with open(file_name, 'wb') as file:
+            pickle.dump(user_courses_map, file)
+
