@@ -73,3 +73,4 @@ More information [here](https://pypi.org/project/texcptulz/).
 * [Flask Documentation](https://flask.palletsprojects.com/en/1.1.x/)
 * [Jinja Documentation](https://jinja.palletsprojects.com/en/2.10.x/)
 * [SQLAlchemy Documentation](https://docs.sqlalchemy.org/en/13/)
+* [Article about Customer Ratings](https://baymard.com/blog/sort-by-customer-ratings)
