@@ -20,27 +20,37 @@ For security and legal reasons, user data is encrypted.
 
 ### The recommender system
 
-The recommendations are based on the following three methods of recommendations:
+The recommendations are based on the following four methods of recommendations:
 
-* Knowledge Based Recommendations
-* Collaborative Filtering Based Recommendations
-* Content Based Recommendations
+* Knowledge based recommendations
+* Content based filtering
+* Neighborhood based collaborative filtering
+* Model based collaborative filtering
 
 The project is divided in two parts:
 
-1. ETL pipeline
-2. A demo web application
+1. ETL pipeline (this notebook)
+2. Exploratory data analysis
+3. Make recommendations
+4. A demo web application
 
 #### ETL pipeline
 
-The pipeline consists on extract data from database re
+The pipeline retrieves raw data from database, then performs the data wrangling process on this data and finally loads the resulting formatted data to database and files, ready to be used in the web application.
+
+#### Exploratory data analysis
+
+Once the data is cleaned, is time to perform an exploratory data analysis. I will search for patterns and trends in data and I will create visualizations for this data as well.
+
+#### Make recommendations
+
+After the exploratory data analysis, is time to play around with structures created in the first part and trying to make recommendations.
 
 #### Demo web
 
 The observations and models derived from the ETL phase and analysis of the project, have been put into practice in a web application that can be accessed [here](https://courses-recommender.herokuapp.com/).
-The application code is in this same repository, in the [/web](https://github.com/fdelgados/courses_recommender/tree/master/web) folder
-
 <a id="dependencies"></a>
+
 ## Dependencies
 To run this project properly, you need the following:
 
