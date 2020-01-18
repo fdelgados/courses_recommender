@@ -22,6 +22,7 @@ class Transform:
         self.user_requested_courses_map = {}
         self.courses_content_sims_df = None
         self.course_course_recs_df = None
+        self.distances_df = None
 
     def remove_duplicated_leads(self, subset: Union[List[str], str] = None) -> int:
         """Removes duplicated rows from leads DataFrame
@@ -360,6 +361,14 @@ class Transform:
         """
         return self.leads_df[self.leads_df['user_id'] == user_id]['course_id'].values
 
+    def rated_courses(self, user_id: str) -> np.ndarray:
+        """Returns an array of course ids rated by a user
+
+        :param user_id: User identifier
+        :return: Array of courses rated by a user
+        """
+        return self.reviews_df[self.reviews_df['user_id'] == user_id]['course_id'].values
+
     def course_course_recommendations(self, course_id: str, max_recs: int = 10) -> np.ndarray:
         """Returns an array of recommended courses based on leads generated in one course
 
@@ -397,6 +406,47 @@ class Transform:
 
         for i in range(0, sparse_matrix.shape[0]):
             self.user_requested_courses_map[self.leads_user_item_matrix.index[i]] = sparse_matrix[i]
+
+    def compute_euclidean_distance(self, a_user_id: str, another_user_id: str) -> float:
+        """Computes the euclidean distance between users taking into account the rated courses
+
+        :param a_user_id: Id of a user
+        :param another_user_id: Id of another user
+        :return: The euclidean distance between the users
+        """
+        a_user_courses = self.rated_courses(a_user_id)
+        another_user_courses = self.rated_courses(another_user_id)
+
+        similar_courses = np.intersect1d(a_user_courses, another_user_courses, assume_unique=True)
+
+        # there's no courses in common
+        if len(similar_courses) == 0:
+            return np.nan
+
+        df = self.ratings_user_item_matrix.loc[(a_user_id, another_user_id), similar_courses]
+
+        return np.linalg.norm(df.loc[a_user_id] - df.loc[another_user_id])
+
+    def create_user_distances_df(self):
+        """Creates a user distances DataFrame using the euclidean distance"""
+        distances = []
+
+        for user_id in self.ratings_user_item_matrix.index:
+            for another_user_id in self.ratings_user_item_matrix.index:
+                if user_id == another_user_id:
+                    continue
+
+                try:
+                    distance = self.compute_euclidean_distance(user_id, another_user_id)
+                except KeyError:
+                    continue
+
+                if np.isnan(distance):
+                    continue
+
+                distances.append({'a_user_id': user_id, 'another_user_id': another_user_id, 'eucl_distance': distance})
+
+        self.distances_df = pd.DataFrame(distances)
 
     @staticmethod
     def __guard_against_non_existent_columns__(df: pd.DataFrame, subset: Union[List[str], str] = None):

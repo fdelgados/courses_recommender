@@ -148,3 +148,25 @@ class Load(DbService):
         with open(file_name, 'wb') as file:
             pickle.dump(user_courses_map, file)
 
+    def save_users_distances(self, distances_df: pd.DataFrame):
+        """Saves users distances DataFrame to database
+
+        :param distances_df: Users distances DataFrame
+        """
+        conn = self.connection()
+
+        sql_drop = 'DROP TABLE IF EXISTS `users_distances`'
+        conn.execute(sql_drop)
+
+        sql_create = """CREATE TABLE `users_distances` (
+          `a_user_id` char(36) NOT NULL,
+          `another_user_id` char(36) NOT NULL,
+          `eucl_distance` double NOT NULL,
+          PRIMARY KEY (`a_user_id`, `another_user_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        """
+        conn.execute(sql_create)
+
+        # Save distances to database
+        distances_df.to_sql('users_distances', con=conn, if_exists='append', index=False)
+
