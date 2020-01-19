@@ -31,7 +31,7 @@ To run this project on a local machine, you have to follow these steps:
     ```
 6. Now, open your browser and go to http://localhost:5000
 
-    ![Home page](https://github.com/fdelgados/recommendations-web/blob/master/img/home_screenshot.png)
+    ![Home page](https://github.com/fdelgados/courses_recommender/blob/master/web/img/home_screenshot.png)
     
 7. To stop the application, press `CTRL+C`
     
