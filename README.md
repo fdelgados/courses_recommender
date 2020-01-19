@@ -45,8 +45,8 @@ I have taken the code written in this section and arranged into several classes 
 To execute the ETL pipeline script, run the following commands:
 
 ```
-$ cd etl/
-$ python pipeline.py <username> <password>
+$ cd automate/
+$ python etl.py <username> <password>
 ```
 ![ETL Pipeline](https://github.com/fdelgados/courses_recommender/blob/master/img/etl_console.png)
 
@@ -61,6 +61,14 @@ The code is in this notebook: [2_Exploratory_data_analysis.ipynb](https://github
 In this part, I will create models from which I will make the recommendations.
 
 The code is in this notebook: [3_Create_models.ipynb](https://github.com/fdelgados/courses_recommender/blob/master/notebooks/3_Create_models.ipynb)
+
+I have taken the code written in this section and arranged into a class and a script, which allows you to automate the models creation.
+To execute the process, run the following commands:
+
+```
+$ cd automate/
+$ python model.py <username> <password>
+```
 
 #### Make recommendations
 
