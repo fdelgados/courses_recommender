@@ -27,7 +27,7 @@ The recommendations are based on the following four methods of recommendations:
 * Neighborhood based collaborative filtering
 * Model based collaborative filtering
 
-The project is divided in two parts:
+The project is divided in four parts:
 
 1. ETL pipeline (this notebook)
 2. Exploratory data analysis
@@ -37,6 +37,15 @@ The project is divided in two parts:
 #### ETL pipeline
 
 The pipeline retrieves raw data from database, then performs the data wrangling process on this data and finally loads the resulting formatted data to database and files, ready to be used in the web application.
+
+I have taken the code written in this section and arranged into several classes and a script, which allows you to automate the ETL process.
+To execute the ETL pipeline script, run the following commands:
+
+```
+$ cd etl/
+$ python pipeline.py <username> <password>1
+```
+![ETL Pipeline](https://github.com/fdelgados/courses_recommender/blob/master/img/etl_console.png)
 
 #### Exploratory data analysis
 
@@ -58,6 +67,7 @@ To run this project properly, you need the following:
 * numpy 1.18.1
 * pandas 0.24.2
 * scikit-learn 0.20.3
+* scipy 1.2.1
 * sqlalchemy 1.3.2
 * matplotlib 3.0.3
 * halo 0.0.28 (Spinner for terminal. [PyPi](https://pypi.org/project/halo/))
