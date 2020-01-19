@@ -45,7 +45,7 @@ In the middle, the most valued courses in the category. And on the right, a list
 
 You can request information about any course by clicking on the "Request information" button, then you must enter your email and click on "Submit"
 
-![Request information](../img/request_info.png)
+![Request information](img/request_info.png)
 
 In the response page, you will see recommendations based on the course you just requested information about:
 
