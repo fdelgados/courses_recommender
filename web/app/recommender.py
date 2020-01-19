@@ -88,14 +88,14 @@ class Recommender:
         if not user_id:
             return self
 
-        user_courses = self.course_repository.find_by_user_leads(user_id)
+        user_courses = self.course_repository.find_requested_by_user(user_id)
         user_courses_ids = np.array(list(user_courses.keys()))
 
         if len(user_courses_ids) == 0:
             return self
 
         rec_courses_ids = np.array([])
-        neighbours_courses = {}
+        sim_users_courses = {}
 
         dirname = os.path.dirname(os.path.abspath(__file__))
         user_map_courses_file = '{}/../data/user_requested_courses_map.pickle'.format(dirname)
@@ -105,10 +105,10 @@ class Recommender:
 
         similar_users = find_similar_users(user_id, user_courses_map)
         for similar_user_id in similar_users:
-            neighbour_courses = self.course_repository.find_by_user_leads(similar_user_id)
-            neighbours_courses.update(neighbour_courses)
+            sim_user_courses = self.course_repository.find_requested_by_user(similar_user_id)
+            sim_users_courses.update(sim_user_courses)
 
-            new_recs = np.setdiff1d(np.array(list(neighbour_courses.keys())), user_courses_ids, assume_unique=True)
+            new_recs = np.setdiff1d(np.array(list(sim_user_courses.keys())), user_courses_ids, assume_unique=True)
             rec_courses_ids = np.unique(np.concatenate([new_recs, rec_courses_ids], axis=0))
 
             if len(rec_courses_ids) > max_recommendations:
@@ -118,7 +118,7 @@ class Recommender:
             return self
 
         rec_courses_ids = rec_courses_ids[:max_recommendations]
-        self.by_user = {course_id: course for (course_id, course) in neighbours_courses.items()
+        self.by_user = {course_id: course for (course_id, course) in sim_users_courses.items()
                         if course_id in rec_courses_ids}
 
         return self

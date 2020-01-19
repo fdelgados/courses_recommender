@@ -367,7 +367,7 @@ class CourseRepository(Repository):
 
         return self.build_response(query, course_id=course_id, limit=max_rows)
 
-    def find_by_user_leads(self, user_id: str) -> Dict[str, Course]:
+    def find_requested_by_user(self, user_id: str) -> Dict[str, Course]:
         """Returns a collection of courses to which a user has generated a lead
 
         :param user_id: User identifier that generated the leads
