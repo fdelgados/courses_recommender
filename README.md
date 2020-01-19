@@ -43,7 +43,7 @@ To execute the ETL pipeline script, run the following commands:
 
 ```
 $ cd etl/
-$ python pipeline.py <username> <password>1
+$ python pipeline.py <username> <password>
 ```
 ![ETL Pipeline](https://github.com/fdelgados/courses_recommender/blob/master/img/etl_console.png)
 
