@@ -27,16 +27,19 @@ The recommendations are based on the following four methods of recommendations:
 * Neighborhood based collaborative filtering
 * Model based collaborative filtering
 
-The project is divided in four parts:
+The project is divided in five parts:
 
-1. ETL pipeline (this notebook)
+1. ETL pipeline
 2. Exploratory data analysis
-3. Make recommendations
-4. A demo web application
+3. Models creation
+4. Make recommendations
+5. A demo web application
 
 #### ETL pipeline
 
-The pipeline retrieves raw data from database, then performs the data wrangling process on this data and finally loads the resulting formatted data to database and files, ready to be used in the web application.
+The pipeline retrieves raw data from database, then performs the data wrangling process on this data and finally loads the resulting clean data to database and files, ready to be used in the web application.
+
+The code is in this notebook: [1_Extract_transform_load.ipynb](https://github.com/fdelgados/courses_recommender/blob/master/notebooks/1_Extract_transform_load.ipynb)
 
 I have taken the code written in this section and arranged into several classes and a script, which allows you to automate the ETL process.
 To execute the ETL pipeline script, run the following commands:
@@ -51,15 +54,25 @@ $ python pipeline.py <username> <password>
 
 Once the data is cleaned, is time to perform an exploratory data analysis. I will search for patterns and trends in data and I will create visualizations for this data as well.
 
+The code is in this notebook: [2_Exploratory_data_analysis.ipynb](https://github.com/fdelgados/courses_recommender/blob/master/notebooks/2_Exploratory_data_analysis.ipynb)
+
+#### Models creation
+
+In this part, I will create models from which I will make the recommendations.
+
+The code is in this notebook: [3_Create_models.ipynb](https://github.com/fdelgados/courses_recommender/blob/master/notebooks/3_Create_models.ipynb)
+
 #### Make recommendations
 
 After the exploratory data analysis, is time to play around with structures created in the first part and trying to make recommendations.
 
+The code is in this notebook: [4_Make_recommendations.ipynb](https://github.com/fdelgados/courses_recommender/blob/master/notebooks/4_Make_recommendations.ipynb)
+
 #### Demo web
 
 The observations and models derived from the ETL phase and analysis of the project, have been put into practice in a web application that can be accessed [here](https://courses-recommender.herokuapp.com/).
-<a id="dependencies"></a>
 
+<a id="dependencies"></a>
 ## Dependencies
 To run this project properly, you need the following:
 
