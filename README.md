@@ -71,6 +71,7 @@ The code is in this notebook: [4_Make_recommendations.ipynb](https://github.com/
 #### Demo web
 
 The observations and models derived from the ETL phase and analysis of the project, have been put into practice in a web application that can be accessed [here](https://courses-recommender.herokuapp.com/).
+You can get more information about this demo web [here](https://fdelgados.github.io/recommendations-web/)
 
 <a id="dependencies"></a>
 ## Dependencies
