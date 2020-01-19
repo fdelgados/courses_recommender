@@ -1,26 +1,28 @@
 import numpy as np
 import os
-from typing import Dict
 from .models import CourseRepository
 import pickle
 
 
-def find_similar_users(user_id: str, sparse_user_item_dict: Dict, min_similarity: int = 1):
-    """
-    Creates an array of similar users based on leads generated on the same courses
+def find_similar_users(user_id: str, min_similarity: int = 1) -> np.ndarray:
+    """Creates an array of similar users based on leads generated on the same courses
 
     :param user_id: User id for which we want to find similar users
-    :param sparse_user_item_dict: Leads user-item matrix
     :param min_similarity: Minimum similarity between users to be listed
-
     :return numpy.array: Array of similar users sorted by similarity
     """
+    # Loading sparse leads user-item matrix from file
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    user_map_courses_file = '{}/../data/user_requested_courses_map.pickle'.format(dirname)
 
-    user_courses = np.array(sparse_user_item_dict[user_id].todense())[0]
+    with open(user_map_courses_file, 'rb') as filename:
+        user_courses_map = pickle.load(filename)
+
+    user_courses = np.array(user_courses_map[user_id].todense())[0]
 
     similarities = dict()
 
-    for another_user_id, another_user_courses in sparse_user_item_dict.items():
+    for another_user_id, another_user_courses in user_courses_map.items():
         if user_id == another_user_id:
             continue
 
@@ -41,6 +43,7 @@ class Recommender:
     def __init__(self):
         """Recommender constructor. Initializes the object."""
 
+        self.user_courses = {}
         self.by_leads = {}
         self.by_content = {}
         self.by_rating = {}
@@ -88,8 +91,8 @@ class Recommender:
         if not user_id:
             return self
 
-        user_courses = self.course_repository.find_requested_by_user(user_id)
-        user_courses_ids = np.array(list(user_courses.keys()))
+        self.user_courses = self.course_repository.find_requested_by_user(user_id)
+        user_courses_ids = np.array(list(self.user_courses.keys()))
 
         if len(user_courses_ids) == 0:
             return self
@@ -97,13 +100,7 @@ class Recommender:
         rec_courses_ids = np.array([])
         sim_users_courses = {}
 
-        dirname = os.path.dirname(os.path.abspath(__file__))
-        user_map_courses_file = '{}/../data/user_requested_courses_map.pickle'.format(dirname)
-
-        with open(user_map_courses_file, 'rb') as filename:
-            user_courses_map = pickle.load(filename)
-
-        similar_users = find_similar_users(user_id, user_courses_map)
+        similar_users = find_similar_users(user_id)
         for similar_user_id in similar_users:
             sim_user_courses = self.course_repository.find_requested_by_user(similar_user_id)
             sim_users_courses.update(sim_user_courses)

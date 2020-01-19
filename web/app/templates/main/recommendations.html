@@ -8,15 +8,6 @@
         </div>
     {% endif %}
 
-    {% if recommendations.by_user|length %}
-    <h3 class="py-3">Recommendations for you</h3>
-    <div class="card">
-        {% with courses=recommendations.by_user %}
-        {% include 'main/course-list.html' %}
-        {% endwith %}
-    </div>
-    {% endif %}
-
     <h3 class="py-3">You may also be interested in</h3>
     <div class="row">
         <div class="col-md-4">
@@ -50,4 +41,13 @@
             </div>
         </div>
     </div>
+    {% if recommendations.by_user|length %}
+    <h3 class="py-3">Recommendations for {{ session['user_name'] }}</h3>
+    <h4 class="py-3">Maybe you would be interested in these courses</h4>
+    <div class="card">
+        {% with courses=recommendations.by_user %}
+        {% include 'main/course-list.html' %}
+        {% endwith %}
+    </div>
+    {% endif %}
 </div>
