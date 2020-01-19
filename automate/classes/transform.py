@@ -2,12 +2,9 @@ from typing import List, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
-from scipy.sparse import csr_matrix
 
 from .rating_functions import all_avg_rating, average_rating, weighted_rating, num_reviews
-from txtools.normalizer import clean_text, TextNormalizer
-from txtools.similarity import Similarity
+from txtools.normalizer import clean_text
 from txtools.utils import LangDetector
 
 
@@ -17,11 +14,6 @@ class Transform:
         self.reviews_df = reviews_df
         self.courses_df = None
         self.categories_df = None
-        self.leads_user_item_matrix = None
-        self.ratings_user_item_matrix = None
-        self.user_requested_courses_map = {}
-        self.courses_content_sims_df = None
-        self.course_course_recs_df = None
 
     def remove_duplicated_leads(self, subset: Union[List[str], str] = None) -> int:
         """Removes duplicated rows from leads DataFrame
@@ -272,165 +264,6 @@ class Transform:
         self.courses_df.drop('category', inplace=True, axis=1)
 
         return self.categories_df
-
-    def create_course_content_similarity_matrix(self, sample_len: int = None) -> np.ndarray:
-        """ Creates a course similarity matrix
-
-        :param sample_len: Maximum number of courses used to create the matrix. If `None`, all courses in DataFrame
-            will be used.
-        :return: An m x m matrix representing the course similarities, where m is the number of courses.
-            Example of a similarity matrix:
-
-             [[0.99999994 0.         0.13075474 0.02665992]
-              [0.         1.         0.00812627 0.00331377]
-              [0.13075474 0.00812627 1.         0.0069054 ]
-              [0.02665992 0.00331377 0.0069054  1.        ]]
-
-            rows and columns represents a course, the elements in the matrix, represent the similarity between them.
-        """
-        course_content = self.courses_df['title'].str.cat(self.courses_df['description'], sep='. ')
-
-        if not sample_len:
-            course_content = course_content.values
-        else:
-            course_content = course_content.head(sample_len).values
-
-        model = Pipeline([
-            ('norm', TextNormalizer()),
-            ('sim', Similarity())
-        ])
-
-        return model.fit_transform(course_content)
-
-    def create_course_content_similarity_df(self, min_similarity: float = 0.5, sample_len: int = None) -> pd.DataFrame:
-        """Creates a course similarity DataFrame from a similarity matrix
-
-        :param min_similarity: Minimum similarity to be included in DataFrame
-        :param sample_len: Maximum number of courses used to create the DataFrame. If `None`, all courses in
-            courses DataFrame will be used.
-        :return: a dataframe with following columns:
-            a_course str: course id
-            another_course str: course id
-            similarity float: similarity between courses
-        """
-        sim_list = []
-        sim_matrix = self.create_course_content_similarity_matrix(sample_len=sample_len)
-
-        for idx, similarities in enumerate(sim_matrix):
-            a_course_id = self.courses_df.iloc[idx]['id']
-
-            for idx_sims, similarity in enumerate(similarities):
-                if idx == idx_sims:
-                    continue
-
-                if similarity < min_similarity:
-                    continue
-
-                another_course_id = self.courses_df.iloc[idx_sims]['id']
-
-                sim_list.append({'a_course_id': a_course_id,
-                                 'another_course_id': another_course_id,
-                                 'similarity': similarity})
-
-        self.courses_content_sims_df = pd.DataFrame(sim_list)
-
-        return self.courses_content_sims_df
-
-    def create_ratings_user_item_matrix(self):
-        """Creates a ratings user-item matrix DataFrame reviews"""
-        user_items = self.reviews_df[['user_id', 'course_id', 'rating']]
-
-        self.ratings_user_item_matrix = user_items.groupby(['user_id', 'course_id'])['rating'].max().unstack()
-
-    def create_leads_user_item_matrix(self):
-        """Creates a leads user-item matrix DataFrame reviews"""
-        user_items = self.leads_df[['user_id', 'course_id']]
-
-        user_item_matrix = user_items.groupby(['user_id', 'course_id'])['course_id'].max().unstack()
-        user_item_matrix = user_item_matrix.where(user_item_matrix.isnull(), other=1)
-        user_item_matrix = user_item_matrix.fillna(0)
-
-        self.leads_user_item_matrix = user_item_matrix
-
-    def requested_courses(self, user_id: str) -> np.ndarray:
-        """Returns an array of courses ids to which the user has generated lead
-
-        :param user_id: User id for which we want to find generated leads
-        :return: An array of courses ids to which the user has generated lead
-        """
-        return self.leads_df[self.leads_df['user_id'] == user_id]['course_id'].values
-
-    def rated_courses(self, user_id: str, lower_bound: int = 2) -> np.ndarray:
-        """Returns an array of course ids rated by a user
-
-        :param user_id: User identifier
-        :param lower_bound: Minimum number of rated courses a user must have
-        :return: Array of courses rated by a user
-        """
-        courses = self.reviews_df[self.reviews_df['user_id'] == user_id]['course_id'].values
-
-        if len(courses) >= lower_bound:
-            return courses
-
-        return np.array([])
-
-    def course_course_recommendations(self, course_id: str, max_recs: int = 10) -> np.ndarray:
-        """Returns an array of recommended courses based on leads generated in one course
-
-        :param course_id: Course id for which we want to make the recommendations
-        :param max_recs: Maximum number of recommendations
-        :return numpy.array: Array of courses recommended based on generated leads in one course
-        """
-        users = np.array(self.leads_user_item_matrix[self.leads_user_item_matrix.loc[:, course_id] == 1].index)
-        recs = np.array([])
-
-        for user_id in users:
-            user_courses = self.requested_courses(user_id)
-
-            new_recs = user_courses[user_courses != course_id]
-            recs = np.unique(np.concatenate([new_recs, recs], axis=0))
-
-            if len(recs) > max_recs:
-                break
-
-        return recs[:max_recs]
-
-    def create_course_course_recommendations_df(self):
-        """Creates a course-course recommendations DataFrame"""
-        recommendations = []
-        for course in self.leads_user_item_matrix.columns:
-            recs = self.course_course_recommendations(course)
-            for rec in recs:
-                recommendations.append({'course': course, 'recommended': rec})
-
-        self.course_course_recs_df = pd.DataFrame(recommendations)
-
-    def compress_leads_user_item_matrix(self):
-        """Compress the leads user-item matrix to a csr_matrix format and creates a user requested courses map"""
-        sparse_matrix = csr_matrix(self.leads_user_item_matrix, dtype='int8')
-
-        for i in range(0, sparse_matrix.shape[0]):
-            self.user_requested_courses_map[self.leads_user_item_matrix.index[i]] = sparse_matrix[i]
-
-    def compute_euclidean_distance(self, a_user_id: str, another_user_id: str) -> float:
-        """Computes the euclidean distance between users taking into account the rated courses
-
-        :param a_user_id: Id of a user
-        :param another_user_id: Id of another user
-        :return: The euclidean distance between the users
-        """
-        a_user_courses = self.rated_courses(a_user_id, lower_bound=1)
-        another_user_courses = self.rated_courses(another_user_id)
-
-        similar_courses = np.intersect1d(a_user_courses, another_user_courses, assume_unique=True)
-
-        # there's no courses in common
-        if len(similar_courses) == 0:
-            return np.nan
-
-        df = self.ratings_user_item_matrix.loc[(a_user_id, another_user_id), similar_courses]
-
-        return np.linalg.norm(df.loc[a_user_id] - df.loc[another_user_id])
 
     @staticmethod
     def __guard_against_non_existent_columns__(df: pd.DataFrame, subset: Union[List[str], str] = None):

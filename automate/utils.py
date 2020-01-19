@@ -1,5 +1,6 @@
 from termcolor import cprint
 from halo import Halo
+import argparse
 
 
 class Output:
@@ -68,3 +69,37 @@ class Output:
         cprint('{}{}'.format(symbol, message), color=color, attrs=['bold'])
         print('')
 
+
+def is_valid_user(username: str, password: str) -> bool:
+    """Checks if user credentials are correct
+
+    :param username: Username
+    :param password: Password
+    :return: Returns `True` if user exists, returns `False` otherwise
+    """
+    with open('./users', 'r') as file:
+        for credentials in file:
+            usr, pwd = credentials.split()
+            if username == usr and password == pwd:
+                return True
+
+    return False
+
+
+def arguments(parser):
+    parser.add_argument('username', help='Username')
+    parser.add_argument('password', help='Password')
+
+    parser.add_argument('-n', '--db-name',
+                        dest='db_name',
+                        help='Database name',
+                        metavar='')
+
+    parser.add_argument('-s', '--db-server',
+                        dest='db_host',
+                        help='Database host',
+                        metavar='')
+
+    args = parser.parse_args()
+
+    return args.username, args.password, args.db_name, args.db_host
