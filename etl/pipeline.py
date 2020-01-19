@@ -45,8 +45,7 @@ def tmp_files() -> bool:
         path.exists('.tmp/leads.csv') and \
         path.exists('.tmp/categories.csv') and \
         path.exists('.tmp/courses_similarities.csv') and \
-        path.exists('.tmp/course_course_recs.csv') and \
-        path.exists('.tmp/users_distances.csv')
+        path.exists('.tmp/course_course_recs.csv')
 
 
 def is_valid_user(username: str, password: str) -> bool:
@@ -257,19 +256,6 @@ def transform_data(leads_df: pd.DataFrame, reviews_df: pd.DataFrame) -> Transfor
         output.spinner_fail(str(err))
         exit(1)
 
-    # Create a user distances DataFrame
-    output.write('Create a user distances DataFrame')
-    output.warning('This process can take a long time')
-    output.start_spinner('Creating a user distances DataFrame')
-
-    try:
-        transform.create_user_distances_df()
-
-        output.spinner_success()
-    except Exception as err:
-        output.spinner_fail(str(err))
-        exit(1)
-
     return transform
 
 
@@ -367,18 +353,6 @@ def load_data(transform: Transform) -> bool:
         output.spinner_fail(str(err))
         load_errors += 1
 
-    # Save users distances to database
-    output.write('Save users distances to database')
-    output.start_spinner('Saving users distances to database')
-
-    try:
-        load.save_users_distances(transform.distances_df)
-
-        output.spinner_success()
-    except Exception as err:
-        output.spinner_fail(str(err))
-        load_errors += 1
-
     return load_errors == 0
 
 
@@ -405,7 +379,6 @@ def main():
         transform.categories_df = pd.read_csv('.tmp/categories.csv')
         transform.courses_content_sims_df = pd.read_csv('.tmp/courses_similarities.csv')
         transform.course_course_recs_df = pd.read_csv('.tmp/course_course_recs.csv')
-        transform.distances_df = pd.read_csv('.tmp/users_distances.csv')
 
     else:
         # Data extraction
@@ -430,7 +403,6 @@ def main():
         transform.categories_df.to_csv('.tmp/categories.csv', index=False)
         transform.courses_content_sims_df.to_csv('.tmp/courses_similarities.csv', index=False)
         transform.course_course_recs_df.to_csv('.tmp/course_course_recs.csv', index=False)
-        transform.distances_df.to_csv('.tmp/users_distances.csv', index=False)
 
         output.warning('ETL pipeline completed with errors')
 
