@@ -453,8 +453,11 @@ class Lead:
         return self.course.id
 
 
-class LeadRepository(Repository, ABC):
+class LeadRepository(Repository):
     """Lead repository. Manages the queries that concern the leads"""
+
+    def build_response(self, query: str, **kwargs) -> Any:
+        pass
 
     def save(self, lead: Lead):
         """Persists a lead into the database
