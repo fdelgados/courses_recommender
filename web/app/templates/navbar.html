@@ -10,8 +10,8 @@
                     <a class="nav-link" href="{{ url_for('main.catalog') }}">Catalog</a>
                 </li>
                 <li class="nav-item">
-                    {% if session.get('user_email') %}
-                        <a class="nav-link" href="{{ url_for('main.logout') }}">{{ session['user_email'] }}</a>
+                    {% if session.get('user_name') %}
+                    <a class="nav-link" href="{{ url_for('main.logout') }}">Close session</a>
                     {% else %}
                         <a class="nav-link" href="{{ url_for('main.login') }}">Sign in</a>
                     {% endif %}

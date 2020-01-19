@@ -90,16 +90,16 @@ class RetrieveCourseCatalog:
 
 
 class RetrieveCourseDataCommand:
-    """Request command containing the course identifier and user email"""
+    """Request command containing the course's identifier and user's identifier"""
 
-    def __init__(self, course_id: int, user_email: str = None):
+    def __init__(self, course_id: int, user_id: str = None):
         """Initializes the command
 
-        :param course_id: Course identifier
-        :param user_email: User email
+        :param course_id: Course's identifier
+        :param user_id: User's identifier
         """
         self.course_id = course_id
-        self.user_email = user_email
+        self.user_id = user_id
 
 
 class RetrieveCourseData:
@@ -118,8 +118,8 @@ class RetrieveCourseData:
         recommender = Recommender()
         recommender.make_recommendations_by_course(course.id).make_rank_recommendations(course.category_id,
                                                                                         str(course.id))
-        if command.user_email:
-            recommender.make_recommendations_by_user(hash_user_email(command.user_email))
+        if command.user_id:
+            recommender.make_recommendations_by_user(command.user_id)
 
         return {'course': course,
                 'recommendations': recommender}
@@ -174,14 +174,14 @@ class PlaceAnInfoRequest:
 
 
 class RetrieveHomeRecommendationsCommand:
-    """Request command containing the user email"""
+    """Request command containing the user's identifier"""
 
-    def __init__(self, user_email: str = None):
+    def __init__(self, user_id: str = None):
         """Initializes the command
 
-        :param user_email: User email
+        :param user_id: User's identifier
         """
-        self.user_email = user_email
+        self.user_id = user_id
 
 
 class RetrieveHomeRecommendations:
@@ -196,8 +196,7 @@ class RetrieveHomeRecommendations:
         """
         recommendations = Recommender()
 
-        user_id = hash_user_email(command.user_email)
-        recommendations.make_rank_recommendations().make_recommendations_by_user(user_id)
+        recommendations.make_rank_recommendations().make_recommendations_by_user(command.user_id)
 
         category_repository = CategoryRepository()
 

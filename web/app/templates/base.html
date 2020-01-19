@@ -18,6 +18,13 @@
         {% endblock %}
         {% block body %}
         <div class="container main-container">
+                {% if session.get('user_name') %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 class="text-right">Logged in as {{ session['user_name'] }}</h6>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="row">
                     {% block content %}
                     {% endblock %}

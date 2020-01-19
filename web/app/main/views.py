@@ -6,14 +6,15 @@ from .use_cases import PlaceAnInfoRequest, PlaceAnInfoRequestCommand
 from .use_cases import RetrieveHomeRecommendations, RetrieveHomeRecommendationsCommand
 from .use_cases import RetrieveCategories
 
-users = {
-    'user@test.com': {
-        'password': '1234'
-    },
-    'testuser@test.com': {
-        'password': '4567'
-    }
-}
+users = [
+    '1460318498c1f53bb880ce2e6d9ef64b',
+    '001d7fed950bc1f5834b2d4af75b1879',
+    '0000b20311e912f825aadd5bd195d9d4',
+    '0105ce929e7d4832f945e2b500eb86e0',
+    '016602affb282ed547501f8a8b9283ed'
+]
+
+test_password = 'testing'
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -22,32 +23,32 @@ def login():
     if request.method == 'POST':
         req = request.form
 
-        user_email = req.get('email')
+        user = req.get('user')
         password = req.get('password')
 
-        user = users.get(user_email)
-
-        if not user or password != user.get('password'):
+        if user not in users or password != test_password:
             error = 'Invalid Credentials. Please try again.'
         else:
             session.clear()
-            session['user_email'] = user_email
+            session['user_id'] = user
+            session['user_name'] = 'User {}'.format(users.index(user) + 1)
 
             return redirect(url_for('main.home'))
 
-    return render_template('login.html', error=error)
+    return render_template('login.html', users=users, error=error)
 
 
 @main.route('/logout')
 def logout():
-    session.pop('user_email', None)
+    session.pop('user_id', None)
+    session.pop('user_name', None)
 
     return redirect(url_for('main.home'))
 
 
 @main.route('/', methods=['GET'])
 def home():
-    command = RetrieveHomeRecommendationsCommand(user_email=session.get('user_email'))
+    command = RetrieveHomeRecommendationsCommand(user_id=session.get('user_id'))
     response = RetrieveHomeRecommendations.execute(command)
 
     return render_template('home.html',
@@ -75,7 +76,7 @@ def catalog():
 
 @main.route('/course/<int:course_id>', methods=['GET'])
 def course(course_id):
-    command = RetrieveCourseDataCommand(course_id, session.get('user_email'))
+    command = RetrieveCourseDataCommand(course_id, session.get('user_id'))
 
     response = RetrieveCourseData.execute(command)
 
