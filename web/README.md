@@ -1,6 +1,6 @@
 # Course recommender web
 This is the code of the demo web application of the course recommendation system project. The application is accessible [here](https://courses-recommender.herokuapp.com/)
-and has been built using [Flask](https://flask.palletsprojects.com/en/1.1.x/).
+and has been built using [Flask](https://flask.palletsprojects.com/en/1.1.x/). For the front-end,  I have used [Bootstrap](https://getbootstrap.com/)
 
 ## Table of contents
 
@@ -72,5 +72,5 @@ In the `app/recommender.py` module there is the business logic of the applicatio
 
 ### Persistence layer
 
-The persistence layer is responsible for managing data and communicates with the persistence system, there are two type of classes: model classes that represents entities of our application
+The persistence layer (in `app/models.py`) is responsible for managing data and communicates with the persistence system, there are two type of classes: model classes that represents entities of our application
 (Course, Lead and Category), and repositories that are responsible for performing the queries to the database and build and return collections of models.
