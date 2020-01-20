@@ -12,6 +12,10 @@ A tool to recommend courses.
 
 [Emagister](https://www.emagister.com) is a company whose objective is to be a meeting point for students and course providers and they aim to do so by helping people find the right training. That's why the recommender system is one of the most important parts of the web. So the main motivation of this project is to improve the current recommendation system.
 
+An important part of the company's business model is the [cost per lead](https://en.wikipedia.org/wiki/Cost_per_lead) business model. Users generate leads on courses offered by centres. Also, the users can rate the course from 1 to 10.
+
+Therefore, I will use this data to measure the popularity of the courses based on two metrics: number of leads generated and rating.
+
 ### Data used for the project
 
 The data that will be worked on in this project are real data extracted from the [Emagister UK](https://www.emagister.co.uk) database. As an employee of Emagister, I requested authorization from the company to use the data, after consulting with our lawyers, the company permitted me. 
