@@ -119,7 +119,7 @@ class RetrieveCourseData:
         recommender.make_recommendations_by_course(course.id).make_rank_recommendations(course.category_id,
                                                                                         str(course.id))
         if command.user_id:
-            recommender.make_recommendations_by_user(command.user_id)
+            recommender.make_recommendations_for_user(command.user_id)
 
         return {'course': course,
                 'recommendations': recommender}
@@ -196,7 +196,7 @@ class RetrieveHomeRecommendations:
         """
         recommendations = Recommender()
 
-        recommendations.make_rank_recommendations().make_recommendations_by_user(command.user_id)
+        recommendations.make_rank_recommendations().make_recommendations_for_user(command.user_id)
 
         category_repository = CategoryRepository()
 

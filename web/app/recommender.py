@@ -81,10 +81,10 @@ class Recommender:
 
         return self
 
-    def make_recommendations_by_user(self, user_id: str = None, max_recommendations: int = 10) -> 'Recommender':
+    def make_recommendations_for_user(self, user_id: str = None, max_recommendations: int = 10) -> 'Recommender':
         """Makes neighbourhood based recommendations
 
-        :param user_id: User identifier to which we want to recommend courses
+        :param user_id: User identifier for which we want to make recommendations
         :param max_recommendations: Maximum number of recommendations
         :return: `Recommender` class
         """
