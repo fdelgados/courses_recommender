@@ -109,8 +109,6 @@ class Model(DbService):
 
     def save_course_content_similarities(self):
         """Saves courses content similarities DataFrame to database"""
-        return
-
         connection = self.connection()
 
         sql_drop = 'DROP TABLE IF EXISTS `courses_similarities`'

@@ -22,7 +22,7 @@ def model_data():
     output.start_spinner('Creating a course content similarity DataFrame')
 
     try:
-        model.create_course_content_similarity_df(sample_len=50)
+        model.create_course_content_similarity_df()
         output.spinner_success()
     except Exception as err:
         output.spinner_fail(str(err))
